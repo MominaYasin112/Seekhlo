@@ -1,0 +1,23 @@
+# Member B backend services. Build sandbox image first:
+#   docker build -t seekhlo-code-runner ./code-runner
+# Then: docker compose up
+
+services:
+  ml-service:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./ml-service:/app
+    command: sh -c "pip install -q -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8001"
+    ports:
+      - "8001:8001"
+
+  code-runner:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./code-runner:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: sh -c "pip install -q -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8002"
+    ports:
+      - "8002:8002"

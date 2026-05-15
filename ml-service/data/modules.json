@@ -1,0 +1,12 @@
+[
+  {"id": 1, "title": "Arrays & Strings", "topic": "Data Structures", "difficulty": "Beginner", "time": "45 min", "xp": 100, "prerequisites": []},
+  {"id": 2, "title": "Linked Lists", "topic": "Data Structures", "difficulty": "Beginner", "time": "60 min", "xp": 120, "prerequisites": [1]},
+  {"id": 3, "title": "Recursion Basics", "topic": "Algorithms", "difficulty": "Intermediate", "time": "50 min", "xp": 130, "prerequisites": [1]},
+  {"id": 4, "title": "Binary Search", "topic": "Algorithms", "difficulty": "Intermediate", "time": "40 min", "xp": 110, "prerequisites": [3]},
+  {"id": 5, "title": "Stack & Queue", "topic": "Data Structures", "difficulty": "Intermediate", "time": "55 min", "xp": 120, "prerequisites": [2]},
+  {"id": 6, "title": "Sorting Algorithms", "topic": "Algorithms", "difficulty": "Intermediate", "time": "65 min", "xp": 140, "prerequisites": [3, 4]},
+  {"id": 7, "title": "Trees & BST", "topic": "Data Structures", "difficulty": "Advanced", "time": "70 min", "xp": 150, "prerequisites": [5]},
+  {"id": 8, "title": "Graph Traversal", "topic": "Algorithms", "difficulty": "Advanced", "time": "75 min", "xp": 160, "prerequisites": [6, 7]},
+  {"id": 9, "title": "Dynamic Programming Intro", "topic": "Algorithms", "difficulty": "Advanced", "time": "80 min", "xp": 170, "prerequisites": [3, 6]},
+  {"id": 10, "title": "Hash Tables", "topic": "Data Structures", "difficulty": "Intermediate", "time": "50 min", "xp": 125, "prerequisites": [1, 2]}
+]

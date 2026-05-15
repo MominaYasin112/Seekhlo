@@ -130,3 +130,13 @@
 .switch a:hover {
   text-decoration: underline;
 }
+
+.success {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.forgot { text-align: right; margin-top: -0.25rem; }
+.forgot a { color: #a78bfa; font-size: 0.8rem; }

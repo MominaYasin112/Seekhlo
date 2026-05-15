@@ -22,11 +22,12 @@ function Signup() {
     }
 
     setLoading(true)
-
-    // MOCK — replace with real API call once Member A's backend is ready
+    // MOCK — saved in browser until Member A's database API is connected
+    const accounts = JSON.parse(localStorage.getItem('seekhlo_accounts') || '{}')
+    accounts[email.toLowerCase()] = { name, email: email.toLowerCase(), password }
+    localStorage.setItem('seekhlo_accounts', JSON.stringify(accounts))
     login({ name, email }, 'mock-token-456')
-    navigate('/dashboard')
-
+    navigate('/onboarding')
     setLoading(false)
   }
 
@@ -45,33 +46,15 @@ function Signup() {
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
             <label>Full Name</label>
-            <input
-              type="text"
-              placeholder="Your name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              required
-            />
+            <input type="text" placeholder="Your name" value={name} onChange={e => setName(e.target.value)} required />
           </div>
           <div className={styles.field}>
             <label>Email</label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-            />
+            <input type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
           <div className={styles.field}>
             <label>Password</label>
-            <input
-              type="password"
-              placeholder="Min. 6 characters"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
+            <input type="password" placeholder="Min. 6 characters" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
           <button type="submit" className={styles.btn} disabled={loading}>
             {loading ? 'Creating account...' : 'Sign Up'}

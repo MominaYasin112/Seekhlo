@@ -16,12 +16,26 @@ function Login() {
     setError('')
     setLoading(true)
 
-    // MOCK — replace with real API call once Member A's backend is ready
-    if (email === 'test@test.com' && password === '123456') {
-      login({ name: 'Student', email }, 'mock-token-123')
+    const emailKey = email.trim().toLowerCase()
+    const accounts = JSON.parse(localStorage.getItem('seekhlo_accounts') || '{}')
+    const saved = accounts[emailKey]
+
+    // Demo account (always works)
+    if (emailKey === 'test@test.com' && password === '123456') {
+      login({ name: 'Student', email: emailKey }, 'mock-token-123')
+      try {
+        const raw = localStorage.getItem('seekhlo_gamification')
+        const g = raw ? JSON.parse(raw) : {}
+        localStorage.setItem('seekhlo_gamification', JSON.stringify({ ...g, onboardingDone: true }))
+      } catch { /* ignore */ }
+      navigate('/dashboard')
+    }
+    // Account created via Sign up (stored in browser, not database yet)
+    else if (saved && saved.password === password) {
+      login({ name: saved.name, email: saved.email }, 'mock-token-456')
       navigate('/dashboard')
     } else {
-      setError('Invalid email or password')
+      setError('Invalid email or password. Use Sign up first, or demo: test@test.com / 123456')
     }
     setLoading(false)
   }
@@ -41,31 +55,22 @@ function Login() {
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
             <label>Email</label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-            />
+            <input type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
           <div className={styles.field}>
             <label>Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
+            <input type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
+          <p className={styles.forgot}>
+            <Link to="/forgot-password">Forgot password?</Link>
+          </p>
           <button type="submit" className={styles.btn} disabled={loading}>
             {loading ? 'Logging in...' : 'Log In'}
           </button>
         </form>
 
         <p className={styles.switch}>
-          Don't have an account? <Link to="/signup">Sign up</Link>
+          Don&apos;t have an account? <Link to="/signup">Sign up</Link>
         </p>
       </div>
     </div>

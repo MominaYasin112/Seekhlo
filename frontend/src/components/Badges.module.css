@@ -1,0 +1,69 @@
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.header h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.count {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.07);
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.badge {
+  border-radius: 12px;
+  padding: 0.85rem;
+  text-align: center;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.earned {
+  background: rgba(124,58,237,0.12);
+  border-color: rgba(124,58,237,0.3);
+}
+
+.locked {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.06);
+  opacity: 0.5;
+}
+
+.icon {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.desc {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.35);
+  margin-top: 2px;
+}
