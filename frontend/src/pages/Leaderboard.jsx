@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import styles from './Leaderboard.module.css'
 import { useAuth } from '../context/AuthContext'
+import { gamificationApi, isBackendEnabled } from '../services/backendApi'
 
 const mockData = {
   daily: [
@@ -39,8 +40,30 @@ const mockData = {
 const medalColors = { 1: '🥇', 2: '🥈', 3: '🥉' }
 
 function Leaderboard() {
+  const { user } = useAuth()
   const [tab, setTab] = useState('daily')
-  const data = mockData[tab]
+  const [data, setData] = useState(mockData.daily)
+
+  useEffect(() => {
+    if (!isBackendEnabled()) {
+      setData(mockData[tab])
+      return
+    }
+    gamificationApi.getLeaderboard(tab)
+      .then((rows) => {
+        const mapped = rows.map((r) => ({
+          rank: r.rank,
+          name: r.name,
+          level: r.level,
+          xp: r.xp,
+          avatar: '👤',
+          isYou: user?.id && r.userId === user.id,
+        }))
+        if (mapped.length) setData(mapped)
+        else setData(mockData[tab])
+      })
+      .catch(() => setData(mockData[tab]))
+  }, [tab, user?.id])
 
   return (
     <div className={styles.page}>

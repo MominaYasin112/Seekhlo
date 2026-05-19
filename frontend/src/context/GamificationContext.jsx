@@ -1,5 +1,7 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { DEFAULT_PERFORMANCE } from '../data/modules'
+import { useAuth } from './AuthContext'
+import { gamificationApi, isBackendEnabled, isRealToken } from '../services/backendApi'
 
 const STORAGE_KEY = 'seekhlo_gamification'
 
@@ -48,9 +50,27 @@ function xpForLevel(level) {
 const GamificationContext = createContext(null)
 
 export function GamificationProvider({ children }) {
+  const { token } = useAuth()
   const [state, setState] = useState(loadState)
   const [toasts, setToasts] = useState([])
   const [levelUp, setLevelUp] = useState(null)
+
+  useEffect(() => {
+    if (!isBackendEnabled() || !isRealToken(token)) return
+    gamificationApi.getStats(token).then((data) => {
+      if (!data) return
+      setState(prev => {
+        const next = {
+          ...prev,
+          xp: data.total_xp ?? prev.xp,
+          level: data.level ?? prev.level,
+          streak: data.streak ?? prev.streak,
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+        return next
+      })
+    }).catch(() => {})
+  }, [token])
 
   const persist = useCallback((next) => {
     setState(next)
@@ -82,7 +102,36 @@ export function GamificationProvider({ children }) {
     addToast('Recommendation skipped — path updated', 'info')
   }, [addToast])
 
-  const awardActivity = useCallback(({ type, title, xpEarned, score, moduleId }) => {
+  const awardActivity = useCallback(async ({ type, title, xpEarned, score, moduleId }) => {
+    if (isBackendEnabled() && isRealToken(token)) {
+      try {
+        const res = await gamificationApi.postActivity(token, type, { score })
+        setState(prev => {
+          const next = { ...prev }
+          next.xp = res.totalXP ?? next.xp + (res.xpEarned || 0)
+          next.level = res.level ?? next.level
+          next.streak = res.streakCount ?? next.streak
+          next.history = [
+            { id: Date.now(), type, title, score, xp: res.xpEarned, date: new Date().toISOString().slice(0, 10) },
+            ...next.history,
+          ]
+          if (moduleId && !next.completedModuleIds.includes(moduleId)) {
+            next.completedModuleIds = [...next.completedModuleIds, moduleId]
+          }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+          return next
+        })
+        if (res.leveledUp) setLevelUp(res.level)
+        if (res.newBadges?.length) {
+          res.newBadges.forEach(b => addToast(`Badge unlocked: ${b.name}`, 'badge'))
+        }
+        addToast(`+${res.xpEarned} XP earned!`, 'xp')
+        return
+      } catch {
+        addToast('Backend unavailable — saved locally', 'info')
+      }
+    }
+
     setState(prev => {
       const next = { ...prev }
       next.xp += xpEarned
@@ -112,7 +161,7 @@ export function GamificationProvider({ children }) {
       return next
     })
     addToast(`+${xpEarned} XP earned!`, 'xp')
-  }, [addToast])
+  }, [addToast, token])
 
   const updatePerformance = useCallback((topic, score) => {
     persist({

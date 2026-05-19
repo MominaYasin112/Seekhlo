@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { authApi, isBackendEnabled } from '../services/backendApi'
 import styles from './Auth.module.css'
 
 function Login() {
@@ -17,10 +18,25 @@ function Login() {
     setLoading(true)
 
     const emailKey = email.trim().toLowerCase()
+
+    try {
+      if (isBackendEnabled()) {
+        const data = await authApi.login({ email: emailKey, password })
+        login(data.user, data.token)
+        localStorage.setItem('seekhlo_gamification', JSON.stringify({ onboardingDone: true }))
+        navigate('/dashboard')
+        return
+      }
+    } catch (err) {
+      setError(err.message)
+      setLoading(false)
+      return
+    }
+
+    // Offline mock fallback (no backend)
     const accounts = JSON.parse(localStorage.getItem('seekhlo_accounts') || '{}')
     const saved = accounts[emailKey]
 
-    // Demo account (always works)
     if (emailKey === 'test@test.com' && password === '123456') {
       login({ name: 'Student', email: emailKey }, 'mock-token-123')
       try {
@@ -29,13 +45,11 @@ function Login() {
         localStorage.setItem('seekhlo_gamification', JSON.stringify({ ...g, onboardingDone: true }))
       } catch { /* ignore */ }
       navigate('/dashboard')
-    }
-    // Account created via Sign up (stored in browser, not database yet)
-    else if (saved && saved.password === password) {
+    } else if (saved && saved.password === password) {
       login({ name: saved.name, email: saved.email }, 'mock-token-456')
       navigate('/dashboard')
     } else {
-      setError('Invalid email or password. Use Sign up first, or demo: test@test.com / 123456')
+      setError('Invalid email or password')
     }
     setLoading(false)
   }

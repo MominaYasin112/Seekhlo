@@ -37,6 +37,9 @@ async function processActivity(userId, activityType, result) {
   const newBadges = await checkBadges(userId, stats);
   const streakCount = await updateStreak(userId, stats);
 
+  const freshStats = await db.query(`SELECT * FROM user_stats WHERE user_id = $1`, [userId]);
+  const current = freshStats.rows[0];
+
   // Try Redis leaderboard, silently skip if unavailable
   try {
     const redis = await getRedisClient();
@@ -55,8 +58,8 @@ async function processActivity(userId, activityType, result) {
 
   return {
     xpEarned,
-    totalXP: stats.total_xp,
-    level: stats.level,
+    totalXP: current.total_xp,
+    level: current.level,
     leveledUp,
     newBadges,
     streakCount,

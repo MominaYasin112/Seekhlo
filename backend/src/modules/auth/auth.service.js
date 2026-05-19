@@ -5,8 +5,28 @@ const db = require('../../config/db');
 const emailService = require('../../config/email');
 require('dotenv').config();
 
+const DEV_AUTO_VERIFY = process.env.DEV_AUTO_VERIFY === 'true';
+
+function signToken(user) {
+  return jwt.sign(
+    { userId: user.id, role: user.role },
+    process.env.JWT_SECRET || 'dev-secret-change-me',
+    { expiresIn: '24h' }
+  );
+}
+
+function publicUser(user) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+}
+
 async function registerUser(name, email, password) {
-  const existing = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+  const normalizedEmail = email.trim().toLowerCase();
+  const existing = await db.query('SELECT id FROM users WHERE email = $1', [normalizedEmail]);
   if (existing.rows.length > 0) {
     throw new Error('Email already registered');
   }
@@ -14,13 +34,36 @@ async function registerUser(name, email, password) {
   const passwordHash = await bcrypt.hash(password, 12);
   const verifyToken = crypto.randomBytes(32).toString('hex');
 
+  const insert = await db.query(
+    `INSERT INTO users (name, email, password_hash, verify_token, is_verified)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING *`,
+    [name, normalizedEmail, passwordHash, verifyToken, DEV_AUTO_VERIFY]
+  );
+  const user = insert.rows[0];
+
   await db.query(
-    `INSERT INTO users (name, email, password_hash, verify_token)
-     VALUES ($1, $2, $3, $4)`,
-    [name, email, passwordHash, verifyToken]
+    `INSERT INTO user_stats (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
+    [user.id]
   );
 
-  await emailService.sendVerificationEmail(email, verifyToken);
+  if (DEV_AUTO_VERIFY) {
+    return {
+      message: 'Registration successful.',
+      token: signToken(user),
+      user: publicUser(user),
+      devAutoVerified: true,
+    };
+  }
+
+  try {
+    await emailService.sendVerificationEmail(normalizedEmail, verifyToken);
+  } catch (err) {
+    console.error('Verification email failed:', err.message);
+    throw new Error(
+      'Account created but email could not be sent. Ask admin to set DEV_AUTO_VERIFY=true for local testing.'
+    );
+  }
 
   return { message: 'Registration successful. Please check your email to verify your account.' };
 }
@@ -28,7 +71,7 @@ async function registerUser(name, email, password) {
 async function verifyEmail(token) {
   const result = await db.query(
     `UPDATE users SET is_verified = true, verify_token = null
-     WHERE verify_token = $1 RETURNING id`,
+     WHERE verify_token = $1 RETURNING *`,
     [token]
   );
 
@@ -36,18 +79,22 @@ async function verifyEmail(token) {
     throw new Error('Invalid or expired verification token');
   }
 
-  const userId = result.rows[0].id;
-
+  const user = result.rows[0];
   await db.query(
-    `INSERT INTO user_stats (user_id) VALUES ($1) ON CONFLICT DO NOTHING`,
-    [userId]
+    `INSERT INTO user_stats (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
+    [user.id]
   );
 
-  return { message: 'Email verified successfully. You can now log in.' };
+  return {
+    message: 'Email verified successfully. You can now log in.',
+    token: signToken(user),
+    user: publicUser(user),
+  };
 }
 
 async function loginUser(email, password) {
-  const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+  const normalizedEmail = email.trim().toLowerCase();
+  const result = await db.query('SELECT * FROM users WHERE email = $1', [normalizedEmail]);
   const user = result.rows[0];
 
   if (!user) {
@@ -55,7 +102,7 @@ async function loginUser(email, password) {
   }
 
   if (!user.is_verified) {
-    throw new Error('Please verify your email before logging in');
+    throw new Error('Please verify your email before logging in. Check your inbox or ask admin to enable DEV_AUTO_VERIFY.');
   }
 
   const match = await bcrypt.compare(password, user.password_hash);
@@ -63,25 +110,15 @@ async function loginUser(email, password) {
     throw new Error('Invalid email or password');
   }
 
-  const token = jwt.sign(
-    { userId: user.id, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: '24h' }
-  );
-
   return {
-    token,
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
+    token: signToken(user),
+    user: publicUser(user),
   };
 }
 
 async function requestPasswordReset(email) {
-  const result = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+  const normalizedEmail = email.trim().toLowerCase();
+  const result = await db.query('SELECT id FROM users WHERE email = $1', [normalizedEmail]);
 
   if (result.rows.length === 0) {
     return { message: 'If that email exists, a reset link has been sent.' };
@@ -92,10 +129,14 @@ async function requestPasswordReset(email) {
 
   await db.query(
     `UPDATE users SET reset_token = $1, reset_token_expiry = $2 WHERE email = $3`,
-    [resetToken, expiry, email]
+    [resetToken, expiry, normalizedEmail]
   );
 
-  await emailService.sendPasswordResetEmail(email, resetToken);
+  try {
+    await emailService.sendPasswordResetEmail(normalizedEmail, resetToken);
+  } catch (err) {
+    console.error('Reset email failed:', err.message);
+  }
 
   return { message: 'If that email exists, a reset link has been sent.' };
 }
@@ -116,7 +157,7 @@ async function resetPassword(token, newPassword) {
     `UPDATE users SET password_hash = $1, reset_token = null, reset_token_expiry = null
      WHERE reset_token = $2`,
     [newHash, token]
-  ); 
+  );
 
   return { message: 'Password updated successfully. You can now log in.' };
 }

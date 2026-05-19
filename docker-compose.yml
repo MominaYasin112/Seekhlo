@@ -1,8 +1,26 @@
-# Member B backend services. Build sandbox image first:
-#   docker build -t seekhlo-code-runner ./code-runner
-# Then: docker compose up
+# Full stack local setup: docker compose up
+# Then: cd frontend && npm run dev
 
 services:
+  postgres:
+    image: postgres:16
+    platform: linux/amd64
+    environment:
+      POSTGRES_USER: seekhlo
+      POSTGRES_PASSWORD: seekhlo123
+      POSTGRES_DB: seekhlo
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/src/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./backend/src/db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+
+  redis:
+    image: redis:7
+    platform: linux/amd64
+    ports:
+      - "6379:6379"
+
   ml-service:
     image: python:3.11-slim
     working_dir: /app
