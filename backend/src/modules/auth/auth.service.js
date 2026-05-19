@@ -14,15 +14,20 @@ async function registerUser(name, email, password) {
   const passwordHash = await bcrypt.hash(password, 12);
   const verifyToken = crypto.randomBytes(32).toString('hex');
 
-  await db.query(
-    `INSERT INTO users (name, email, password_hash, verify_token)
-     VALUES ($1, $2, $3, $4)`,
+  const result = await db.query(
+    `INSERT INTO users (name, email, password_hash, verify_token, is_verified)
+     VALUES ($1, $2, $3, $4, true) RETURNING id`,
     [name, email, passwordHash, verifyToken]
   );
 
-  await emailService.sendVerificationEmail(email, verifyToken);
+  const userId = result.rows[0].id;
 
-  return { message: 'Registration successful. Please check your email to verify your account.' };
+  await db.query(
+    `INSERT INTO user_stats (user_id) VALUES ($1) ON CONFLICT DO NOTHING`,
+    [userId]
+  );
+
+  return { message: 'Registration successful. You can now log in.' };
 }
 
 async function verifyEmail(token) {
