@@ -1,0 +1,89 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+  padding: 1rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 520px;
+  width: 100%;
+}
+
+.logo {
+  font-size: 1.75rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.logo span {
+  color: #7c3aed;
+}
+
+.sub {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.progressTrack {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c3aed, #a78bfa);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.step {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 0.5rem;
+}
+
+.question {
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.topic {
+  font-size: 0.85rem;
+  color: #7c3aed;
+  margin-bottom: 1.25rem;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.option {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 1rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.option:hover {
+  border-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.15);
+}

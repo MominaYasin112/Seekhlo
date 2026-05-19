@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { authApi, isBackendEnabled } from '../services/backendApi'
 import styles from './Auth.module.css'
 
 function Signup() {
@@ -23,10 +24,31 @@ function Signup() {
 
     setLoading(true)
 
-    // MOCK — replace with real API call once Member A's backend is ready
-    login({ name, email }, 'mock-token-456')
-    navigate('/dashboard')
+    try {
+      if (isBackendEnabled()) {
+        const data = await authApi.register({ name, email: email.trim().toLowerCase(), password })
+        if (data.token && data.user) {
+          login(data.user, data.token)
+          localStorage.setItem('seekhlo_gamification', JSON.stringify({ onboardingDone: false }))
+          navigate('/onboarding')
+          return
+        }
+        setError(data.message || 'Check your email to verify your account, then log in.')
+        setLoading(false)
+        return
+      }
+    } catch (err) {
+      setError(err.message)
+      setLoading(false)
+      return
+    }
 
+    const emailKey = email.trim().toLowerCase()
+    const accounts = JSON.parse(localStorage.getItem('seekhlo_accounts') || '{}')
+    accounts[emailKey] = { name, email: emailKey, password }
+    localStorage.setItem('seekhlo_accounts', JSON.stringify(accounts))
+    login({ name, email: emailKey }, 'mock-token-456')
+    navigate('/onboarding')
     setLoading(false)
   }
 
@@ -37,47 +59,25 @@ function Signup() {
           <span className={styles.logoText}>Seekh<span className={styles.logoAccent}>Lo</span></span>
           <p className={styles.tagline}>Learn. Level Up. Repeat.</p>
         </div>
-
         <h2 className={styles.title}>Create your account</h2>
-
         {error && <div className={styles.error}>{error}</div>}
-
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
             <label>Full Name</label>
-            <input
-              type="text"
-              placeholder="Your name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              required
-            />
+            <input type="text" value={name} onChange={e => setName(e.target.value)} required />
           </div>
           <div className={styles.field}>
             <label>Email</label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-            />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
           <div className={styles.field}>
             <label>Password</label>
-            <input
-              type="password"
-              placeholder="Min. 6 characters"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
           <button type="submit" className={styles.btn} disabled={loading}>
             {loading ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
-
         <p className={styles.switch}>
           Already have an account? <Link to="/login">Log in</Link>
         </p>

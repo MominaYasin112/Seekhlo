@@ -1,25 +1,29 @@
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import Navbar from '../components/Navbar'
+import StatsBar from '../components/StatsBar'
+import LearningPath from '../components/LearningPath'
+import Badges from '../components/Badges'
+import styles from './Dashboard.module.css'
 
 function Dashboard() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
 
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
-
   return (
-    <div style={{ padding: '2rem', color: '#fff' }}>
-      <h1>Welcome, {user?.name} 👋</h1>
-      <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '0.5rem' }}>Dashboard coming soon...</p>
-      <button
-        onClick={handleLogout}
-        style={{ marginTop: '2rem', background: '#7c3aed', color: '#fff', padding: '0.6rem 1.2rem', borderRadius: '8px' }}
-      >
-        Logout
-      </button>
+    <div className={styles.page}>
+      <Navbar />
+      <div className={styles.content}>
+        <div className={styles.welcome}>
+          <h1>Welcome back, <span>{user?.name}</span> 👋</h1>
+          <p>Keep the streak going — your path is ready.</p>
+        </div>
+        <StatsBar />
+        <div className={styles.grid}>
+          <LearningPath />
+          <Badges />
+        </div>
+      </div>
     </div>
   )
 }

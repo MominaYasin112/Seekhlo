@@ -1,0 +1,14 @@
+.page { min-height: 100vh; background: #0f0f1a; }
+.content { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+.header h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+.header p { color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-bottom: 1.5rem; }
+.summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 2rem; }
+.summaryCard { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.25rem; text-align: center; }
+.summaryVal { display: block; font-size: 1.5rem; font-weight: 700; color: #7c3aed; }
+.summaryLabel { font-size: 0.8rem; color: rgba(255,255,255,0.45); }
+.timeline h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+.empty { color: rgba(255,255,255,0.4); }
+.row { display: flex; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.04); border-radius: 10px; margin-bottom: 0.5rem; }
+.icon { font-size: 1.5rem; }
+.rowTitle { font-weight: 600; margin-bottom: 0.25rem; }
+.rowMeta { font-size: 0.8rem; color: rgba(255,255,255,0.45); }

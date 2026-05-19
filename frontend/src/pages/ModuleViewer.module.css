@@ -1,0 +1,113 @@
+.page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+}
+
+.content {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.back {
+  background: transparent;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s;
+  padding: 0;
+}
+
+.back:hover {
+  color: #fff;
+}
+
+.moduleHeader {
+  margin-bottom: 1.5rem;
+}
+
+.tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 0.75rem;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.5);
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.xpTag {
+  font-size: 0.75rem;
+  background: rgba(124,58,237,0.15);
+  color: #a78bfa;
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid rgba(124,58,237,0.3);
+}
+
+.moduleHeader h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.lessonCard {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 16px;
+  padding: 2rem;
+  line-height: 1.8;
+}
+
+.h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #a78bfa;
+  margin: 1.2rem 0 0.5rem;
+}
+
+.p {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.95rem;
+  margin: 0.3rem 0;
+}
+
+.bold {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+}
+
+.li {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.92rem;
+  margin: 0.3rem 0 0.3rem 1.2rem;
+}
+
+.quizBtn {
+  display: block;
+  width: 100%;
+  margin-top: 1.5rem;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.quizBtn:hover {
+  opacity: 0.88;
+}
+.videoCard { margin-bottom: 1.5rem; }
+.videoPlaceholder { background: rgba(0,0,0,0.4); border-radius: 12px; padding: 3rem; text-align: center; border: 1px dashed rgba(124,58,237,0.4); }
+.videoPlaceholder span { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+.videoNote { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 0.5rem; }
