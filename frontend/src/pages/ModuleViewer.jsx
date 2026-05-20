@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Quiz from '../components/Quiz'
 import CodingChallenge from '../components/CodingChallenge'
+import LessonAIChat from '../components/LessonAIChat'
 import { useGamification } from '../context/GamificationContext'
 import { MODULE_CATALOG, MODULE_CONTENT } from '../data/modules'
 import styles from './ModuleViewer.module.css'
@@ -17,6 +18,7 @@ function ModuleViewer() {
   const catalog = MODULE_CATALOG.find((m) => m.id === moduleId)
   const content = MODULE_CONTENT[moduleId]
   const [showQuiz, setShowQuiz] = useState(false)
+  const [completing, setCompleting] = useState(false)
 
   if (!catalog || !content) {
     return (
@@ -60,8 +62,16 @@ function ModuleViewer() {
     return result
   }
 
-  const completeLesson = () => {
-    awardActivity({ type: catalog.type === 'video' ? 'video' : 'lesson', title: catalog.title, xpEarned: catalog.xp, score: null, moduleId })
+  const completeLesson = async () => {
+    if (completing) return
+    setCompleting(true)
+    await awardActivity({
+      type: catalog.type === 'video' ? 'video' : 'lesson',
+      title: catalog.title,
+      xpEarned: catalog.xp,
+      score: null,
+      moduleId,
+    })
     navigate('/dashboard')
   }
 
@@ -72,13 +82,22 @@ function ModuleViewer() {
         <Navbar />
         <div className={styles.content}>
           <button type="button" className={styles.back} onClick={() => navigate('/dashboard')}>Back</button>
-          <CodingChallenge challenge={{ ...content, xp: catalog.xp, title: catalog.title }} moduleId={moduleId} onComplete={() => navigate('/dashboard')} />
+          <CodingChallenge
+            challenge={{ ...content, xp: catalog.xp, title: catalog.title }}
+            moduleId={moduleId}
+            onComplete={() => navigate('/dashboard')}
+          />
         </div>
+        <LessonAIChat
+          lessonTitle={catalog.title}
+          lessonTopic={catalog.topic}
+          lessonContent={content?.description || content?.content || ''}
+        />
       </div>
     )
   }
 
-  // Pure quiz module — render Quiz OUTSIDE the white card to avoid invisible text
+  // Pure quiz module
   if (catalog.type === 'quiz' && content?.quiz) {
     return (
       <div className={styles.page}>
@@ -95,8 +114,19 @@ function ModuleViewer() {
               </div>
             </div>
           </div>
-          <Quiz questions={content.quiz} xp={catalog.xp} title={catalog.title} moduleId={moduleId} onComplete={() => navigate('/dashboard')} />
+          <Quiz
+            questions={content.quiz}
+            xp={catalog.xp}
+            title={catalog.title}
+            moduleId={moduleId}
+            onComplete={() => navigate('/dashboard')}
+          />
         </div>
+        <LessonAIChat
+          lessonTitle={catalog.title}
+          lessonTopic={catalog.topic}
+          lessonContent={content?.content || ''}
+        />
       </div>
     )
   }
@@ -120,31 +150,55 @@ function ModuleViewer() {
           <div className={styles.body}>
             {catalog.type === 'video' ? (
               <>
-                <iframe className={styles.video} src={content?.videoUrl || ''} title={catalog.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                <iframe
+                  className={styles.video}
+                  src={content?.videoUrl || ''}
+                  title={catalog.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
                 {renderContent(content?.content)}
               </>
             ) : (
               renderContent(content?.content)
             )}
           </div>
+
           {!showQuiz && content?.quiz && (
             <button type="button" className={styles.completeBtn} onClick={() => setShowQuiz(true)}>
               Take the Quiz to Earn XP →
             </button>
           )}
           {!content?.quiz && (
-            <button type="button" className={styles.completeBtn} onClick={completeLesson}>
-              Mark Complete ✓
+            <button
+              type="button"
+              className={styles.completeBtn}
+              onClick={completeLesson}
+              disabled={completing}
+            >
+              {completing ? 'Saving…' : 'Mark Complete ✓'}
             </button>
           )}
         </div>
 
         {showQuiz && content?.quiz && (
           <div style={{ marginTop: '1.5rem' }}>
-            <Quiz questions={content.quiz} xp={catalog.xp} title={catalog.title} moduleId={moduleId} onComplete={() => navigate('/dashboard')} />
+            <Quiz
+              questions={content.quiz}
+              xp={catalog.xp}
+              title={catalog.title}
+              moduleId={moduleId}
+              onComplete={() => navigate('/dashboard')}
+            />
           </div>
         )}
       </div>
+
+      <LessonAIChat
+        lessonTitle={catalog.title}
+        lessonTopic={catalog.topic}
+        lessonContent={content?.content || ''}
+      />
     </div>
   )
 }

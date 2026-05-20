@@ -89,6 +89,21 @@ export function GamificationProvider({ children }) {
     setState(loadState(user?.id))
   }, [user?.id])
 
+  // Re-sync from localStorage on window focus (safety net for navigation races)
+  useEffect(() => {
+    const syncFromStorage = () => {
+      const fresh = loadState(user?.id)
+      setState(prev => {
+        if (fresh.xp !== prev.xp || fresh.level !== prev.level || fresh.rank !== prev.rank) {
+          return fresh
+        }
+        return prev
+      })
+    }
+    window.addEventListener('focus', syncFromStorage)
+    return () => window.removeEventListener('focus', syncFromStorage)
+  }, [user?.id])
+
   // FIX: fetch leaderboard to compute real rank when backend is enabled
   useEffect(() => {
     if (!isBackendEnabled() || !isRealToken(token)) return
@@ -201,53 +216,64 @@ export function GamificationProvider({ children }) {
       }
     }
 
-    setState(prev => {
-      let next = { ...prev }
-      next.xp += xpEarned
+    // ── LOCAL PATH ──────────────────────────────────────────────────────────
+    // IMPORTANT: compute the full next state and write it to localStorage
+    // SYNCHRONOUSLY here — BEFORE calling setState. React may batch setState
+    // and apply it after navigate(), so the Dashboard would mount with stale
+    // context. By writing to localStorage first, loadState() on re-mount will
+    // always pick up the correct, updated values.
+    const key = getStorageKey(user?.id)
+    const current = key ? (() => {
+      try { return JSON.parse(localStorage.getItem(key)) || {} } catch { return {} }
+    })() : {}
 
-      // FIX: update streak on activity
-      next = updateStreak(next)
+    const base = { ...freshState, ...current }
+    let next = { ...base }
+    next.xp += xpEarned
 
-      // FIX: reset modulesToday counter if it's a new day
-      const today = new Date().toISOString().slice(0, 10)
-      if (next.modulesTodayDate !== today) {
-        next.modulesToday = 0
-        next.modulesTodayDate = today
-      }
+    next = updateStreak(next)
 
-      next.history = [
-        { id: Date.now(), type, title, score, xp: xpEarned, date: today },
-        ...next.history,
-      ]
-      if (moduleId && !next.completedModuleIds.includes(moduleId)) {
-        next.completedModuleIds = [...next.completedModuleIds, moduleId]
-      }
-      if (type === 'coding_challenge') next.challengesSolved += 1
-      if (type === 'quiz' && score === 100) next.perfectQuizzes += 1
-      next.modulesToday += 1
+    const today = new Date().toISOString().slice(0, 10)
+    if (next.modulesTodayDate !== today) {
+      next.modulesToday = 0
+      next.modulesTodayDate = today
+    }
 
-      const threshold = xpForLevel(next.level)
-      if (next.xp >= threshold) {
-        next.level += 1
-        setLevelUp(next.level)
-      }
+    next.history = [
+      { id: Date.now(), type, title, score, xp: xpEarned, date: today },
+      ...next.history,
+    ]
+    if (moduleId && !next.completedModuleIds.includes(moduleId)) {
+      next.completedModuleIds = [...next.completedModuleIds, moduleId]
+    }
+    if (type === 'coding_challenge') next.challengesSolved += 1
+    if (type === 'quiz' && score === 100) next.perfectQuizzes += 1
+    next.modulesToday += 1
 
-      // FIX: recalculate rank locally based on XP (simple: rank 1 if any XP)
-      if (next.xp > 0 && (next.rank === null || next.rank > 1)) {
-        next.rank = 1 // local-only mode: you're always #1 on your own device
-      }
+    const threshold = xpForLevel(next.level)
+    if (next.xp >= threshold) {
+      next.level += 1
+      setLevelUp(next.level)
+    }
 
-      const newBadges = BADGE_DEFS.filter(
-        b => !next.earnedBadgeIds.includes(b.id) && b.check(next)
-      )
-      if (newBadges.length) {
-        next.earnedBadgeIds = [...next.earnedBadgeIds, ...newBadges.map(b => b.id)]
-        newBadges.forEach(b => addToast(`Badge unlocked: ${b.name} ${b.icon}`, 'badge'))
-      }
-      const key = getStorageKey(user?.id)
-      if (key) localStorage.setItem(key, JSON.stringify(next))
-      return next
-    })
+    if (next.xp > 0 && (next.rank === null || next.rank > 1)) {
+      next.rank = 1
+    }
+
+    const newBadges = BADGE_DEFS.filter(
+      b => !next.earnedBadgeIds.includes(b.id) && b.check(next)
+    )
+    if (newBadges.length) {
+      next.earnedBadgeIds = [...next.earnedBadgeIds, ...newBadges.map(b => b.id)]
+      newBadges.forEach(b => addToast(`Badge unlocked: ${b.name} ${b.icon}`, 'badge'))
+    }
+
+    // Write to localStorage FIRST so Dashboard always sees fresh data on mount
+    if (key) localStorage.setItem(key, JSON.stringify(next))
+
+    // Then update React state (may be applied after navigation — that's fine now)
+    setState(next)
+
     addToast(`+${xpEarned} XP earned! ⚡`, 'xp')
   }, [addToast, token, user?.id])
 

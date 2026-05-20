@@ -48,7 +48,8 @@ function CodingChallenge({ challenge, moduleId, onComplete }) {
       setRunnerDown(false)
 
       if (data.all_passed) {
-        awardActivity({
+        // FIX: await awardActivity so XP + streak saved to localStorage BEFORE navigating
+        await awardActivity({
           type: 'coding_challenge',
           title: challenge.title || 'Coding Challenge',
           xpEarned: challenge.xp || 100,
@@ -56,7 +57,7 @@ function CodingChallenge({ challenge, moduleId, onComplete }) {
           moduleId,
         })
         localStorage.removeItem(draftKey)
-        setTimeout(onComplete, 1500)
+        onComplete()   // navigate immediately after state is saved
       } else {
         const next = retries + 1
         setRetries(next)

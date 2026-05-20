@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useGamification } from '../context/GamificationContext'
 import styles from './Quiz.module.css'
 
@@ -12,6 +12,7 @@ function Quiz({ questions, xp, title, moduleId, onComplete }) {
   const [score, setScore] = useState(0)
   const [finished, setFinished] = useState(false)
   const [awarded, setAwarded] = useState(false)
+  const [xpSaved, setXpSaved] = useState(false) // tracks whether XP has been persisted
 
   const q = questions[current]
 
@@ -32,20 +33,42 @@ function Quiz({ questions, xp, title, moduleId, onComplete }) {
     }
   }
 
-  const handleFinish = () => {
-    if (!awarded) {
-      const percent = Math.round((score / questions.length) * 100)
-      if (percent >= PASSING_SCORE) {
-        awardActivity({
-          type: 'quiz',
-          title: title || 'Quiz',
-          xpEarned: xp,
-          score: percent,
-          moduleId,
-        })
-      }
+  // Award XP immediately when quiz finishes — BEFORE user clicks any button.
+  // This ensures state + localStorage are updated before navigation.
+  useEffect(() => {
+    if (!finished || awarded) return
+
+    const percent = Math.round((score / questions.length) * 100)
+
+    // Hard safety: no matter what happens, unlock the button after 3s
+    const safetyTimer = setTimeout(() => setXpSaved(true), 3000)
+
+    if (percent >= PASSING_SCORE) {
       setAwarded(true)
+      awardActivity({
+        type: 'quiz',
+        title: title || 'Quiz',
+        xpEarned: xp,
+        score: percent,
+        moduleId,
+      }).then(() => {
+        clearTimeout(safetyTimer)
+        setXpSaved(true)
+      }).catch(() => {
+        clearTimeout(safetyTimer)
+        setXpSaved(true)
+      })
+    } else {
+      clearTimeout(safetyTimer)
+      setAwarded(true)
+      setXpSaved(true)
     }
+
+    return () => clearTimeout(safetyTimer)
+  }, [finished]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Navigate to dashboard — XP is already saved so dashboard sees updated state
+  const handleGoToDashboard = () => {
     onComplete()
   }
 
@@ -56,6 +79,7 @@ function Quiz({ questions, xp, title, moduleId, onComplete }) {
     setScore(0)
     setFinished(false)
     setAwarded(false)
+    setXpSaved(false)
   }
 
   if (finished) {
@@ -76,8 +100,13 @@ function Quiz({ questions, xp, title, moduleId, onComplete }) {
           <>
             <div className={styles.xpEarned}>⚡ +{xp} XP earned!</div>
             <p className={styles.passSub}>Module marked as complete ✓</p>
-            <button type="button" className={styles.doneBtn} onClick={handleFinish}>
-              Back to Dashboard
+            <button
+              type="button"
+              className={styles.doneBtn}
+              onClick={handleGoToDashboard}
+              disabled={!xpSaved}
+            >
+              {xpSaved ? 'Go to Dashboard →' : 'Saving…'}
             </button>
           </>
         ) : (
@@ -89,8 +118,13 @@ function Quiz({ questions, xp, title, moduleId, onComplete }) {
               <button type="button" className={styles.retryBtn} onClick={handleRetry}>
                 Try Again 🔄
               </button>
-              <button type="button" className={styles.doneBtn} onClick={handleFinish}>
-                Back to Dashboard
+              <button
+                type="button"
+                className={styles.doneBtn}
+                onClick={handleGoToDashboard}
+                disabled={!xpSaved}
+              >
+                {xpSaved ? 'Back to Dashboard' : 'Saving…'}
               </button>
             </div>
           </>
@@ -137,8 +171,8 @@ function Quiz({ questions, xp, title, moduleId, onComplete }) {
       {answered && (
         <div className={styles.feedback}>
           {selected === q.correct
-            ? '✅ Correct!'
-            : `❌ Incorrect. The correct answer is: ${q.options[q.correct]}`}
+            ? 'Correct!'
+            : `Incorrect. The correct answer is: ${q.options[q.correct]}`}
         </div>
       )}
 
