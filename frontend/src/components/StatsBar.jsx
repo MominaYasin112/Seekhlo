@@ -5,6 +5,9 @@ function StatsBar() {
   const { stats } = useGamification()
   const progress = Math.min(100, (stats.xp / stats.xpToNext) * 100)
 
+  // FIX: show "—" for new users with no rank yet, not #999
+  const rankDisplay = stats.rank != null ? `#${stats.rank}` : '—'
+
   return (
     <div className={styles.bar}>
       <div className={styles.stat}>
@@ -38,8 +41,10 @@ function StatsBar() {
       <div className={styles.stat}>
         <div className={styles.icon}>🏆</div>
         <div>
-          <div className={styles.value}>#{stats.rank}</div>
-          <div className={styles.label}>Leaderboard Rank</div>
+          <div className={styles.value}>{rankDisplay}</div>
+          <div className={styles.label}>
+            {stats.rank != null ? 'Leaderboard Rank' : 'Complete a module!'}
+          </div>
         </div>
       </div>
     </div>

@@ -7,20 +7,22 @@
 .problem h2 {
   font-size: 1.25rem;
   margin-bottom: 0.75rem;
+  color: #1e1b4b;
 }
 
 .statement {
   white-space: pre-wrap;
   font-family: inherit;
-  color: rgba(255, 255, 255, 0.85);
+  color: #374151;
   line-height: 1.6;
   font-size: 0.95rem;
 }
 
 .editorWrap {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1.5px solid #e0e7ff;
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.08);
 }
 
 .toolbar {
@@ -28,9 +30,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: rgba(0, 0, 0, 0.3);
+  background: #f5f3ff;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #6b7280;
+  border-bottom: 1px solid #e0e7ff;
 }
 
 .toolbarRight {
@@ -39,12 +42,19 @@
 }
 
 .secondary {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.8);
+  background: #fff;
+  border: 1.5px solid #d1d5db;
+  color: #374151;
   padding: 0.35rem 0.75rem;
   border-radius: 6px;
   font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.secondary:hover {
+  border-color: #6366f1;
+  color: #6366f1;
 }
 
 .run {
@@ -54,6 +64,12 @@
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.run:hover {
+  background: #6d28d9;
 }
 
 .run:disabled {
@@ -61,6 +77,7 @@
   cursor: not-allowed;
 }
 
+/* Keep the code editor itself dark — that's intentional and correct */
 .editor {
   width: 100%;
   background: #0d1117;
@@ -72,33 +89,44 @@
   resize: vertical;
   border: none;
   min-height: 280px;
+  outline: none;
 }
 
 .retries {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: #6b7280;
   padding: 0.5rem 1rem;
-  background: rgba(0, 0, 0, 0.2);
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
 }
 
 .hintBox {
-  background: rgba(124, 58, 237, 0.15);
-  border: 1px solid rgba(124, 58, 237, 0.3);
+  background: #f5f3ff;
+  border: 1.5px solid #ddd6fe;
   border-radius: 8px;
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
+  color: #4c1d95;
 }
 
 .hintBtn {
   align-self: flex-start;
   background: transparent;
-  color: #a78bfa;
+  color: #7c3aed;
   font-size: 0.85rem;
   text-decoration: underline;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.hintBtn:hover {
+  color: #6d28d9;
 }
 
 .results {
-  background: rgba(255, 255, 255, 0.04);
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
   border-radius: 12px;
   padding: 1rem;
 }
@@ -106,6 +134,8 @@
 .results h3 {
   font-size: 0.95rem;
   margin-bottom: 0.75rem;
+  color: #1e1b4b;
+  font-weight: 700;
 }
 
 .testRow {
@@ -114,14 +144,20 @@
   gap: 0.5rem 1rem;
   padding: 0.5rem 0;
   font-size: 0.85rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
 }
 
-.pass { color: #86efac; }
-.fail { color: #fca5a5; }
+.testRow:last-child {
+  border-bottom: none;
+}
+
+.pass { color: #15803d; font-weight: 600; }
+.fail { color: #b91c1c; font-weight: 600; }
 
 .detail {
   width: 100%;
   font-size: 0.8rem;
-  opacity: 0.85;
+  color: #6b7280;
+  opacity: 1;
 }

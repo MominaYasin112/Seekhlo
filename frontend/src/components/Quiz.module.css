@@ -1,21 +1,31 @@
+/* Quiz component — light background theme */
 .card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.09);
+  background: #f8f7ff;
+  border: 1.5px solid #e0e7ff;
   border-radius: 16px;
   padding: 2rem;
 }
 
 .progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.4);
+  color: #6b7280;
   margin-bottom: 1rem;
 }
 
+.passingNote {
+  font-size: 0.75rem;
+  color: #7c3aed;
+  font-weight: 600;
+}
+
 .progressTrack {
-  height: 4px;
-  background: rgba(255,255,255,0.1);
+  height: 5px;
+  background: #e0e7ff;
   border-radius: 99px;
-  margin-top: 6px;
+  margin-top: 8px;
   overflow: hidden;
 }
 
@@ -28,10 +38,10 @@
 
 .question {
   font-size: 1.1rem;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 700;
+  color: #1e1b4b;
   margin-bottom: 1.5rem;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .options {
@@ -44,51 +54,55 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
+  background: #fff;
+  border: 1.5px solid #e0e7ff;
+  border-radius: 12px;
   padding: 0.85rem 1rem;
-  color: rgba(255,255,255,0.75);
+  color: #374151;
   font-size: 0.92rem;
+  font-weight: 500;
   text-align: left;
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 .option:hover:not(:disabled) {
-  background: rgba(124,58,237,0.1);
-  border-color: rgba(124,58,237,0.3);
-  color: #fff;
+  background: #f5f3ff;
+  border-color: #a78bfa;
+  color: #1e1b4b;
 }
 
 .selected {
   border-color: #7c3aed !important;
-  background: rgba(124,58,237,0.12) !important;
+  background: #f5f3ff !important;
+  color: #1e1b4b !important;
 }
 
 .correct {
-  background: rgba(34,197,94,0.12) !important;
-  border-color: rgba(34,197,94,0.4) !important;
-  color: #86efac !important;
+  background: #f0fdf4 !important;
+  border-color: #22c55e !important;
+  color: #15803d !important;
+  font-weight: 600 !important;
 }
 
 .wrong {
-  background: rgba(239,68,68,0.1) !important;
-  border-color: rgba(239,68,68,0.35) !important;
-  color: #fca5a5 !important;
+  background: #fef2f2 !important;
+  border-color: #ef4444 !important;
+  color: #b91c1c !important;
 }
 
 .optLetter {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.08);
+  background: #eef2ff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
   font-weight: 700;
   flex-shrink: 0;
-  color: rgba(255,255,255,0.5);
+  color: #6366f1;
 }
 
 .feedback {
@@ -96,75 +110,129 @@
   padding: 0.75rem 1rem;
   border-radius: 10px;
   font-size: 0.88rem;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.7);
+  font-weight: 600;
+  background: #f5f3ff;
+  border: 1.5px solid #ddd6fe;
+  color: #4c1d95;
 }
 
 .nextBtn {
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
   color: #fff;
-  padding: 0.85rem;
-  border-radius: 10px;
+  padding: 0.9rem;
+  border-radius: 12px;
   font-size: 0.95rem;
-  font-weight: 600;
-  transition: opacity 0.2s;
+  font-weight: 700;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(124,58,237,0.3);
 }
 
 .nextBtn:hover {
-  opacity: 0.88;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(124,58,237,0.4);
 }
 
+/* Results */
 .result {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.09);
+  background: #f8f7ff;
+  border: 1.5px solid #e0e7ff;
   border-radius: 16px;
   padding: 3rem 2rem;
   text-align: center;
 }
 
 .resultIcon {
-  font-size: 3rem;
+  font-size: 3.5rem;
   margin-bottom: 1rem;
 }
 
-.result h2 {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #fff;
+.passTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #16a34a;
+  margin-bottom: 0.5rem;
+}
+
+.failTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #dc2626;
   margin-bottom: 0.5rem;
 }
 
 .resultScore {
-  color: rgba(255,255,255,0.5);
+  color: #6b7280;
   font-size: 0.95rem;
   margin-bottom: 1rem;
 }
 
 .xpEarned {
   display: inline-block;
-  background: rgba(124,58,237,0.15);
-  color: #a78bfa;
-  border: 1px solid rgba(124,58,237,0.3);
-  padding: 0.5rem 1.2rem;
+  background: #eef2ff;
+  color: #4f46e5;
+  border: 1.5px solid #c7d2fe;
+  padding: 0.5rem 1.4rem;
   border-radius: 99px;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+
+.passSub {
+  color: #16a34a;
+  font-size: 0.85rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
+}
+
+.failNote {
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #b91c1c;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.retryBtns {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.retryBtn {
+  background: #f5f3ff;
+  color: #7c3aed;
+  border: 1.5px solid #ddd6fe;
+  padding: 0.85rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.retryBtn:hover {
+  background: #ede9fe;
+  border-color: #a78bfa;
 }
 
 .doneBtn {
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
   color: #fff;
   padding: 0.85rem 2rem;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 0.95rem;
-  font-weight: 600;
-  transition: opacity 0.2s;
+  font-weight: 700;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(124,58,237,0.3);
 }
 
 .doneBtn:hover {
-  opacity: 0.88;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(124,58,237,0.4);
 }

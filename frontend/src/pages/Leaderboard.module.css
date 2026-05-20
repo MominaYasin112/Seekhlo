@@ -1,10 +1,10 @@
 .page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+  background: linear-gradient(135deg, #f0f4ff 0%, #fdf4ff 100%);
 }
 
 .content {
-  max-width: 750px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
@@ -15,17 +15,17 @@
 }
 
 .header h1 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e1b4b;
 }
 
 .header p {
-  color: rgba(255,255,255,0.4);
-  margin-top: 0.4rem;
-  font-size: 0.9rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
 }
 
+/* Tabs */
 .tabs {
   display: flex;
   gap: 0.5rem;
@@ -34,160 +34,199 @@
 }
 
 .tab {
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.5);
-  padding: 0.5rem 1.2rem;
+  padding: 0.5rem 1.4rem;
   border-radius: 99px;
-  font-size: 0.88rem;
-  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: #fff;
+  color: #6366f1;
+  border: 1.5px solid #e0e7ff;
   transition: all 0.2s;
 }
 
 .tab:hover {
-  background: rgba(255,255,255,0.09);
+  background: #eef2ff;
+}
+
+.tab.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
 }
 
-.active {
-  background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
-  color: #fff !important;
-  border-color: transparent !important;
-}
-
-.podium {
+/* Podium */
+.podiumWrap {
   display: flex;
-  justify-content: center;
   align-items: flex-end;
+  justify-content: center;
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
 .podiumCard {
+  border-radius: 20px;
+  padding: 1.5rem 1.25rem;
   text-align: center;
-  padding: 1.2rem 1rem;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.1);
-  min-width: 140px;
+  min-width: 160px;
+  position: relative;
   transition: transform 0.2s;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 .podiumCard:hover {
   transform: translateY(-4px);
 }
 
+/* Gold — tallest */
 .rank1 {
-  background: rgba(234,179,8,0.12);
-  border-color: rgba(234,179,8,0.3);
-  order: 2;
-  padding-bottom: 1.8rem;
+  background: linear-gradient(135deg, #fef08a, #facc15);
+  border: 2px solid #eab308;
+  min-height: 210px;
 }
 
+/* Silver */
 .rank2 {
-  background: rgba(148,163,184,0.08);
-  border-color: rgba(148,163,184,0.2);
-  order: 1;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  border: 2px solid #94a3b8;
+  min-height: 180px;
 }
 
+/* Bronze */
 .rank3 {
-  background: rgba(180,83,9,0.1);
-  border-color: rgba(180,83,9,0.25);
-  order: 3;
+  background: linear-gradient(135deg, #fed7aa, #fb923c);
+  border: 2px solid #f97316;
+  min-height: 165px;
 }
 
-.medal {
-  font-size: 1.5rem;
-  margin-bottom: 6px;
+.podiumYou {
+  outline: 3px solid #6366f1;
+  outline-offset: 3px;
 }
 
-.avatar {
+.podiumMedal {
   font-size: 2rem;
-  margin-bottom: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.podiumAvatar {
+  font-size: 2rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.6rem;
+  border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .podiumName {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e1b4b;
+  margin-bottom: 0.3rem;
 }
 
 .podiumXp {
-  font-size: 0.78rem;
-  color: #a78bfa;
-  font-weight: 600;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #4f46e5;
+  margin-bottom: 0.2rem;
 }
 
 .podiumLevel {
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.35);
-  margin-top: 2px;
+  font-size: 0.78rem;
+  color: #6b7280;
+  font-weight: 600;
 }
 
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 12px;
-  padding: 0.85rem 1.1rem;
-  transition: all 0.2s;
-}
-
-.row:hover {
-  border-color: rgba(124,58,237,0.3);
-}
-
-.youRow {
-  background: rgba(124,58,237,0.1) !important;
-  border-color: rgba(124,58,237,0.4) !important;
-}
-
-.rankNum {
-  width: 36px;
-  text-align: center;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: rgba(255,255,255,0.5);
-  flex-shrink: 0;
-}
-
-.userAvatar {
-  font-size: 1.4rem;
-  flex-shrink: 0;
-}
-
-.userName {
-  flex: 1;
-  font-size: 0.92rem;
-  font-weight: 500;
+.youBadge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #6366f1;
   color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.youTag {
   font-size: 0.7rem;
-  background: #7c3aed;
-  color: #fff;
-  padding: 2px 8px;
+  font-weight: 700;
+  padding: 2px 9px;
   border-radius: 99px;
 }
 
-.userLevel {
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.35);
+/* Table */
+.tableWrap {
+  background: #fff;
+  border-radius: 20px;
+  border: 1.5px solid #e0e7ff;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.07);
 }
 
-.userXp {
-  font-size: 0.85rem;
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead tr {
+  background: #f5f3ff;
+}
+
+.table th {
+  padding: 0.85rem 1.25rem;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6366f1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table td {
+  padding: 0.9rem 1.25rem;
+  border-top: 1px solid #f3f4f6;
+  font-size: 0.92rem;
+  color: #374151;
+}
+
+.table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.youRow td {
+  background: #eef2ff !important;
   font-weight: 600;
-  color: #a78bfa;
+}
+
+.rankCell {
+  font-weight: 700;
+  color: #6366f1;
+  width: 60px;
+}
+
+.nameCell {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  color: #1e1b4b;
+}
+
+.rowAvatar {
+  font-size: 1.25rem;
+}
+
+.youTag {
+  background: #6366f1;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 99px;
+  margin-left: 0.25rem;
+}
+
+.xpCell {
+  font-weight: 700;
+  color: #6366f1;
 }

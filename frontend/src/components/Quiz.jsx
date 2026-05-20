@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useGamification } from '../context/GamificationContext'
 import styles from './Quiz.module.css'
 
+const PASSING_SCORE = 70
+
 function Quiz({ questions, xp, title, moduleId, onComplete }) {
   const { awardActivity } = useGamification()
   const [current, setCurrent] = useState(0)
@@ -17,12 +19,12 @@ function Quiz({ questions, xp, title, moduleId, onComplete }) {
     if (answered) return
     setSelected(index)
     setAnswered(true)
-    if (index === q.correct) setScore(s => s + 1)
+    if (index === q.correct) setScore((s) => s + 1)
   }
 
   const handleNext = () => {
     if (current + 1 < questions.length) {
-      setCurrent(c => c + 1)
+      setCurrent((c) => c + 1)
       setSelected(null)
       setAnswered(false)
     } else {
@@ -33,29 +35,66 @@ function Quiz({ questions, xp, title, moduleId, onComplete }) {
   const handleFinish = () => {
     if (!awarded) {
       const percent = Math.round((score / questions.length) * 100)
-      const earned = Math.round(xp * (percent / 100))
-      awardActivity({
-        type: 'quiz',
-        title: title || 'Quiz',
-        xpEarned: earned,
-        score: percent,
-        moduleId,
-      })
+      if (percent >= PASSING_SCORE) {
+        awardActivity({
+          type: 'quiz',
+          title: title || 'Quiz',
+          xpEarned: xp,
+          score: percent,
+          moduleId,
+        })
+      }
       setAwarded(true)
     }
     onComplete()
   }
 
+  const handleRetry = () => {
+    setCurrent(0)
+    setSelected(null)
+    setAnswered(false)
+    setScore(0)
+    setFinished(false)
+    setAwarded(false)
+  }
+
   if (finished) {
     const percent = Math.round((score / questions.length) * 100)
-    const earned = Math.round(xp * (percent / 100))
+    const passed = percent >= PASSING_SCORE
+
     return (
       <div className={styles.result}>
-        <div className={styles.resultIcon}>{percent >= 70 ? '🎉' : '📚'}</div>
-        <h2>{percent >= 70 ? 'Great job!' : 'Keep practicing!'}</h2>
-        <p className={styles.resultScore}>{score} / {questions.length} correct ({percent}%)</p>
-        <div className={styles.xpEarned}>⚡ +{earned} XP earned</div>
-        <button type="button" className={styles.doneBtn} onClick={handleFinish}>Back to Dashboard</button>
+        <div className={styles.resultIcon}>{passed ? '🎉' : '📚'}</div>
+        <h2 className={passed ? styles.passTitle : styles.failTitle}>
+          {passed ? 'Great job! You passed!' : 'Not quite — keep going!'}
+        </h2>
+        <p className={styles.resultScore}>
+          {score} / {questions.length} correct ({percent}%)
+        </p>
+
+        {passed ? (
+          <>
+            <div className={styles.xpEarned}>⚡ +{xp} XP earned!</div>
+            <p className={styles.passSub}>Module marked as complete ✓</p>
+            <button type="button" className={styles.doneBtn} onClick={handleFinish}>
+              Back to Dashboard
+            </button>
+          </>
+        ) : (
+          <>
+            <div className={styles.failNote}>
+              You need {PASSING_SCORE}% to pass and earn XP. No XP awarded this time.
+            </div>
+            <div className={styles.retryBtns}>
+              <button type="button" className={styles.retryBtn} onClick={handleRetry}>
+                Try Again 🔄
+              </button>
+              <button type="button" className={styles.doneBtn} onClick={handleFinish}>
+                Back to Dashboard
+              </button>
+            </div>
+          </>
+        )}
       </div>
     )
   }
@@ -63,9 +102,15 @@ function Quiz({ questions, xp, title, moduleId, onComplete }) {
   return (
     <div className={styles.card}>
       <div className={styles.progress}>
-        Question {current + 1} of {questions.length}
+        <span>
+          Question {current + 1} of {questions.length}
+        </span>
+        <span className={styles.passingNote}>Pass: {PASSING_SCORE}% to earn XP</span>
         <div className={styles.progressTrack}>
-          <div className={styles.progressFill} style={{ width: `${((current + 1) / questions.length) * 100}%` }} />
+          <div
+            className={styles.progressFill}
+            style={{ width: `${((current + 1) / questions.length) * 100}%` }}
+          />
         </div>
       </div>
 

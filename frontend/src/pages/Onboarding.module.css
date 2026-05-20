@@ -1,89 +1,13 @@
-.page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
-  padding: 1rem;
-}
-
-.card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 2.5rem;
-  max-width: 520px;
-  width: 100%;
-}
-
-.logo {
-  font-size: 1.75rem;
-  font-weight: 800;
-  text-align: center;
-  margin-bottom: 0.25rem;
-}
-
-.logo span {
-  color: #7c3aed;
-}
-
-.sub {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-}
-
-.progressTrack {
-  height: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  margin-bottom: 1.5rem;
-  overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-  background: linear-gradient(90deg, #7c3aed, #a78bfa);
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
-.step {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 0.5rem;
-}
-
-.question {
-  font-size: 1.2rem;
-  margin-bottom: 0.25rem;
-}
-
-.topic {
-  font-size: 0.85rem;
-  color: #7c3aed;
-  margin-bottom: 1.25rem;
-}
-
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.option {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #fff;
-  padding: 1rem 1.25rem;
-  border-radius: 10px;
-  text-align: left;
-  font-size: 1rem;
-  transition: border-color 0.2s, background 0.2s;
-}
-
-.option:hover {
-  border-color: #7c3aed;
-  background: rgba(124, 58, 237, 0.15);
-}
+.page { min-height: 100vh; background: linear-gradient(135deg, #e0e7ff 0%, #f0fdf4 100%); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.card { background: #fff; border-radius: 24px; padding: 2.5rem; max-width: 520px; width: 100%; box-shadow: 0 8px 40px rgba(99,102,241,0.12); border: 1.5px solid #e0e7ff; }
+.logo { font-size: 1.6rem; font-weight: 800; color: #1e1b4b; margin-bottom: 0.5rem; }
+.logo span { color: #6366f1; }
+.step { font-size: 0.82rem; color: #6b7280; margin-bottom: 2rem; font-weight: 500; }
+.question { font-size: 1.1rem; font-weight: 700; color: #1e1b4b; margin-bottom: 1.2rem; }
+.options { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+.option { padding: 0.9rem 1.2rem; border-radius: 14px; border: 2px solid #e0e7ff; background: #f9fafb; font-size: 0.95rem; font-weight: 600; color: #374151; cursor: pointer; transition: all 0.2s; text-align: left; }
+.option:hover { border-color: #6366f1; background: #eef2ff; color: #6366f1; }
+.selected { border-color: #6366f1 !important; background: #eef2ff !important; color: #6366f1 !important; }
+.btn { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; padding: 0.85rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 700; width: 100%; transition: all 0.2s; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+.btn:hover { transform: translateY(-1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }

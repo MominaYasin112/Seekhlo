@@ -1,29 +1,19 @@
 .card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: 16px;
+  background: #ffffff;
+  border: 1.5px solid #e0e7ff;
+  border-radius: 20px;
   padding: 1.5rem;
+  box-shadow: 0 2px 16px rgba(99,102,241,0.07);
 }
 
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   margin-bottom: 1.2rem;
 }
 
 .header h2 {
   font-size: 1.05rem;
-  font-weight: 600;
-  color: #fff;
-}
-
-.count {
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.4);
-  background: rgba(255,255,255,0.07);
-  padding: 3px 10px;
-  border-radius: 99px;
+  font-weight: 700;
+  color: #1e1b4b;
 }
 
 .grid {
@@ -33,37 +23,46 @@
 }
 
 .badge {
-  border-radius: 12px;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
   padding: 0.85rem;
   text-align: center;
-  border: 1px solid transparent;
   transition: all 0.2s;
 }
 
 .earned {
-  background: rgba(124,58,237,0.12);
-  border-color: rgba(124,58,237,0.3);
+  background: linear-gradient(135deg, #eef2ff, #fdf4ff);
+  border-color: #c7d2fe;
 }
 
-.locked {
-  background: rgba(255,255,255,0.03);
-  border-color: rgba(255,255,255,0.06);
-  opacity: 0.5;
+.earned:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99,102,241,0.15);
 }
 
 .icon {
-  font-size: 1.5rem;
-  margin-bottom: 5px;
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.locked .icon {
+  filter: grayscale(1);
+  opacity: 0.4;
 }
 
 .name {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e1b4b;
+}
+
+.locked .name {
+  color: #9ca3af;
 }
 
 .desc {
   font-size: 0.68rem;
-  color: rgba(255,255,255,0.35);
+  color: #6b7280;
   margin-top: 2px;
 }

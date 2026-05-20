@@ -119,10 +119,16 @@ async function updateStreak(userId, stats) {
   let newStreak = stats.streak;
 
   if (lastActive === today) {
+    // Already counted today — don't change anything
     return newStreak;
   } else if (lastActive === yesterday) {
+    // Consecutive day — increment streak
     newStreak = stats.streak + 1;
+  } else if (lastActive === null) {
+    // Very first activity ever — start streak at 1
+    newStreak = 1;
   } else {
+    // Missed a day — reset to 1 (starting fresh today)
     newStreak = 1;
   }
 

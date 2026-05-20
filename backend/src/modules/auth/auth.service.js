@@ -34,15 +34,6 @@ async function registerUser(name, email, password) {
   const passwordHash = await bcrypt.hash(password, 12);
   const verifyToken = crypto.randomBytes(32).toString('hex');
 
-<<<<<<< HEAD
-  const result = await db.query(
-    `INSERT INTO users (name, email, password_hash, verify_token, is_verified)
-     VALUES ($1, $2, $3, $4, true) RETURNING id`,
-    [name, email, passwordHash, verifyToken]
-  );
-
-  const userId = result.rows[0].id;
-=======
   const insert = await db.query(
     `INSERT INTO users (name, email, password_hash, verify_token, is_verified)
      VALUES ($1, $2, $3, $4, $5)
@@ -73,14 +64,8 @@ async function registerUser(name, email, password) {
       'Account created but email could not be sent. Ask admin to set DEV_AUTO_VERIFY=true for local testing.'
     );
   }
->>>>>>> e39cbefe71add95444b5c5ed74ffe6e22ec00d8f
 
-  await db.query(
-    `INSERT INTO user_stats (user_id) VALUES ($1) ON CONFLICT DO NOTHING`,
-    [userId]
-  );
-
-  return { message: 'Registration successful. You can now log in.' };
+  return { message: 'Registration successful. Please check your email to verify your account.' };
 }
 
 async function verifyEmail(token) {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import styles from './Leaderboard.module.css'
 import { useAuth } from '../context/AuthContext'
+import { useGamification } from '../context/GamificationContext'
 import { gamificationApi, isBackendEnabled } from '../services/backendApi'
 
 const mockData = {
@@ -17,14 +18,12 @@ const mockData = {
     { rank: 9, name: 'Omer Shafiq', level: 3, xp: 110, avatar: '🧑‍💻' },
     { rank: 10, name: 'Momina Yasin', level: 3, xp: 100, avatar: '👩‍💻' },
     { rank: 11, name: 'Eiman Farooq', level: 3, xp: 90, avatar: '👩‍🎓' },
-    { rank: 12, name: 'You', level: 3, xp: 80, avatar: '⭐', isYou: true },
   ],
   weekly: [
     { rank: 1, name: 'Sara Khan', level: 7, xp: 1800, avatar: '👩‍💻' },
     { rank: 2, name: 'Ali Hassan', level: 8, xp: 1650, avatar: '🧑‍💻' },
     { rank: 3, name: 'Fatima Zahra', level: 4, xp: 1400, avatar: '👩‍💻' },
     { rank: 4, name: 'Usman Tariq', level: 6, xp: 1200, avatar: '🧑‍🎓' },
-    { rank: 5, name: 'You', level: 3, xp: 950, avatar: '⭐', isYou: true },
   ],
   alltime: [
     { rank: 1, name: 'Ali Hassan', level: 8, xp: 12400, avatar: '🧑‍💻' },
@@ -33,23 +32,50 @@ const mockData = {
     { rank: 4, name: 'Hina Malik', level: 5, xp: 8200, avatar: '👩‍🎓' },
     { rank: 5, name: 'Bilal Ahmed', level: 5, xp: 7100, avatar: '🧑‍💻' },
     { rank: 6, name: 'Fatima Zahra', level: 4, xp: 6300, avatar: '👩‍💻' },
-    { rank: 7, name: 'You', level: 3, xp: 1250, avatar: '⭐', isYou: true },
-  ]
+  ],
 }
 
-const medalColors = { 1: '🥇', 2: '🥈', 3: '🥉' }
+const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' }
+const PODIUM_ORDER = [2, 1, 3] // silver left, gold center, bronze right
+
+// FIX: inject real user into the leaderboard at the correct rank
+function injectCurrentUser(data, user, stats) {
+  if (!user || !stats) return data
+  const name = user.name?.split(' ')[0] || user.email?.split('@')[0] || 'You'
+  const xp = stats.xp ?? 0
+  const level = stats.level ?? 1
+
+  // Remove any existing "You" placeholder
+  const filtered = data.filter(r => !r.isYou)
+
+  // Insert current user at correct position based on XP
+  const allUsers = [
+    ...filtered,
+    { name, xp, level, avatar: '⭐', isYou: true, rank: 0 },
+  ]
+
+  // Sort by XP descending and assign ranks
+  allUsers.sort((a, b) => b.xp - a.xp)
+  allUsers.forEach((u, i) => { u.rank = i + 1 })
+
+  return allUsers
+}
 
 function Leaderboard() {
   const { user } = useAuth()
+  const { stats } = useGamification()
   const [tab, setTab] = useState('daily')
-  const [data, setData] = useState(mockData.daily)
+  const [data, setData] = useState([])
 
   useEffect(() => {
     if (!isBackendEnabled()) {
-      setData(mockData[tab])
+      // FIX: always inject real user into mock data
+      const base = mockData[tab] || []
+      setData(injectCurrentUser(base, user, stats))
       return
     }
-    gamificationApi.getLeaderboard(tab)
+    gamificationApi
+      .getLeaderboard(tab)
       .then((rows) => {
         const mapped = rows.map((r) => ({
           rank: r.rank,
@@ -59,11 +85,19 @@ function Leaderboard() {
           avatar: '👤',
           isYou: user?.id && r.userId === user.id,
         }))
-        if (mapped.length) setData(mapped)
-        else setData(mockData[tab])
+        const result = mapped.length ? mapped : mockData[tab]
+        setData(injectCurrentUser(result, user, stats))
       })
-      .catch(() => setData(mockData[tab]))
-  }, [tab, user?.id])
+      .catch(() => {
+        setData(injectCurrentUser(mockData[tab], user, stats))
+      })
+  }, [tab, user?.id, stats?.xp])  // FIX: re-run when user's XP changes
+
+  const topThree = data.filter((u) => u.rank <= 3)
+  const rest = data.filter((u) => u.rank > 3)
+
+  // Reorder podium: [2,1,3] so gold is in center
+  const podiumOrdered = PODIUM_ORDER.map((r) => topThree.find((u) => u.rank === r)).filter(Boolean)
 
   return (
     <div className={styles.page}>
@@ -75,7 +109,7 @@ function Leaderboard() {
         </div>
 
         <div className={styles.tabs}>
-          {['daily', 'weekly', 'alltime'].map(t => (
+          {['daily', 'weekly', 'alltime'].map((t) => (
             <button
               key={t}
               className={`${styles.tab} ${tab === t ? styles.active : ''}`}
@@ -86,36 +120,54 @@ function Leaderboard() {
           ))}
         </div>
 
-        {/* Top 3 podium */}
-        <div className={styles.podium}>
-          {data.slice(0, 3).map(user => (
-            <div key={user.rank} className={`${styles.podiumCard} ${styles[`rank${user.rank}`]}`}>
-              <div className={styles.medal}>{medalColors[user.rank]}</div>
-              <div className={styles.avatar}>{user.avatar}</div>
-              <div className={styles.podiumName}>{user.name}</div>
-              <div className={styles.podiumXp}>⚡ {user.xp.toLocaleString()} XP</div>
-              <div className={styles.podiumLevel}>Lv. {user.level}</div>
-            </div>
-          ))}
-        </div>
+        {/* Top 3 Podium */}
+        {topThree.length > 0 && (
+          <div className={styles.podiumWrap}>
+            {podiumOrdered.map((u) => (
+              <div
+                key={u.rank}
+                className={`${styles.podiumCard} ${styles[`rank${u.rank}`]} ${u.isYou ? styles.podiumYou : ''}`}
+              >
+                <div className={styles.podiumMedal}>{MEDALS[u.rank]}</div>
+                <div className={styles.podiumAvatar}>{u.avatar}</div>
+                <div className={styles.podiumName}>{u.name}</div>
+                <div className={styles.podiumXp}>⚡ {u.xp.toLocaleString()} XP</div>
+                <div className={styles.podiumLevel}>Lv. {u.level}</div>
+                {u.isYou && <div className={styles.youBadge}>You</div>}
+              </div>
+            ))}
+          </div>
+        )}
 
-        {/* Full list */}
-        <div className={styles.list}>
-          {data.map(user => (
-            <div key={user.rank} className={`${styles.row} ${user.isYou ? styles.youRow : ''}`}>
-              <div className={styles.rankNum}>
-                {medalColors[user.rank] || `#${user.rank}`}
-              </div>
-              <div className={styles.userAvatar}>{user.avatar}</div>
-              <div className={styles.userName}>
-                {user.name}
-                {user.isYou && <span className={styles.youTag}>You</span>}
-              </div>
-              <div className={styles.userLevel}>Lv. {user.level}</div>
-              <div className={styles.userXp}>⚡ {user.xp.toLocaleString()} XP</div>
-            </div>
-          ))}
-        </div>
+        {/* Rest of table */}
+        {rest.length > 0 && (
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Student</th>
+                  <th>Level</th>
+                  <th>XP</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rest.map((u) => (
+                  <tr key={u.rank} className={u.isYou ? styles.youRow : ''}>
+                    <td className={styles.rankCell}>#{u.rank}</td>
+                    <td className={styles.nameCell}>
+                      <span className={styles.rowAvatar}>{u.avatar}</span>
+                      {u.name}
+                      {u.isYou && <span className={styles.youTag}>You</span>}
+                    </td>
+                    <td>Lv. {u.level}</td>
+                    <td className={styles.xpCell}>⚡ {u.xp.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   )
